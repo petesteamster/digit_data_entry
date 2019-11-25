@@ -1,5 +1,6 @@
+
 def insert_mods_to_js_file(t_js_file,the_dict):
-    from digit_capture import set_file_name_prefix
+    from digit_capture import set_file_name_prefix,in_colab
     from digit_capture import read_pickle,write_pickle
     # this will read in a js file. Inputs will be
     # the file name.
@@ -9,10 +10,11 @@ def insert_mods_to_js_file(t_js_file,the_dict):
     # values. This function enables rudumentry communication
     # from python to javascript
     fname_pfx=set_file_name_prefix(0)[0]
+    print(fname_pfx)
     #pk_file=t_js_file[0,-3]+'.pk'
     #the_dict=read_pickle(fname_pfx+pk_file)
     #file1 = open(fname_pfx+t_js_file,"r+")
-    file1 = open(t_js_file,"r+")  
+    file1 = open(fname_pfx+t_js_file,"r+")  
     the_js_data=file1.read()
     for old,new in the_dict.items():
         the_js_data=the_js_data.replace(old,str(new))
@@ -22,6 +24,7 @@ def cross_ref_replace_dict(t_file_name):
     import pandas as pd
     from digit_capture import set_file_name_prefix
     from digit_capture import get_global_settings as gs
+    colab_choice=['not_colab_output(imgData)','colab_output(imgData)']
     t_full_side_size=gs('grid_count')*gs('pxl')
     cross_ref_dict={'?width?':t_full_side_size,'?height?':t_full_side_size}
     test_keys = ["?class00?",
@@ -53,6 +56,7 @@ def cross_ref_replace_dict(t_file_name):
     res['?grid_count?']=get_dict()['grid_count']
     res['?pxl?']=get_dict()['pxl']
     res['?line_wd?']=get_dict()['line_wd']
+    res['?output_data?']=colab_choice[in_colab()]
     return res
 def get_dict():
     #dictionary holds the values of global variables.
@@ -77,7 +81,7 @@ def mount_drive():
 def in_colab():
     import sys
     IN_COLAB = 'google.colab' in sys.modules
-    return IN_COLAB
+    return int(IN_COLAB)
 def set_file_name_prefix(colab):
     # if colab=1, set up structure for colab.
     # if colab=0, set up structure for local.
@@ -86,7 +90,7 @@ def set_file_name_prefix(colab):
     import os
     t_prefix=""
     t_path=""
-    if(in_colab()):
+    if(in_colab()==1):
         colab=1
     if(colab==1):
         t_path='/content/drive/My Drive/Colab Notebooks/digit_data_entry/digit_data_entry'
