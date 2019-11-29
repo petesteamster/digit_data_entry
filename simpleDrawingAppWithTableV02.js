@@ -144,7 +144,7 @@ function grid_lines(side_count,grid_size)
    var w=c.width
    var h=c.height
    //alert(w+" "+h)
-   ctx.strokeStyle=getHexValue(200,0,0);
+   ctx.strokeStyle=getHexValue(255,0,0);
    //ctx.beginPath();
 //};
    var x1=0;y1=0;x2=0;y2=0;
@@ -206,6 +206,7 @@ function not_colab_output(targ)
 }
 function colab_output(targ) {
     t_ark=targ
+    console.log(' in colab output') 
     google.colab.kernel.invokeFunction(
     'notebook.Concat', // The callback name.
     [t_ark, 'world!'], // The arguments.
@@ -225,6 +226,7 @@ function savePicture()
     tStr = JSON.stringify(imgData)
     //IPython.notebook.kernel.execute("tnr="+imgData+";output_data(tnr)")
     //IPython.notebook.kernel.execute("tnr="+imgData+";output_data(tnr)")
+    // template replaced with a function based on if the notebook is run in colab or mac/pc
     ?output_data?
 }
 function getHexValue(r,g,b) {   
@@ -235,12 +237,13 @@ function getHexValue(r,g,b) {
 };
 function drawLine(x1,y1,x2,y2)
 {
+   // used for debugging
    hold_up(2)
    var c = document.getElementById("myCanvas");
    var ctx = c.getContext("2d");
    ctx.lineWidth=2;
    ctx.beginPath();
-   ctx.strokeStyle=getHexValue(200,0,0);
+   ctx.strokeStyle=getHexValue(255,0,0);
    //hold_up(3)
    
    ctx.moveTo(x1, y1);
@@ -249,7 +252,7 @@ function drawLine(x1,y1,x2,y2)
    //ctx.stroke();
    ctx.closePath();
    ctx.stroke();
-   ctx.strokeStyle=getHexValue(200,0,0);
+   ctx.strokeStyle=getHexValue(255,0,0);
    hold_up(4)
 };
 
