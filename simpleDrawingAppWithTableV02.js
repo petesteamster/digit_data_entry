@@ -62,12 +62,26 @@
     <button onclick="do_erase_toggle()">Erase</button>
     <button onclick="clear_canvas()">Clear</button>
     <button onclick="redrawGrid()">Grid</button>
+    <select id='theSelect' onchange="?class_label_choice?">
+       <option value="0"  >Class 0</option>
+       <option value="1"  >Class 1</option>
+       <option value="2"  >Class 2</option>
+       <option value="3"  >Class 3</option>
+       <option value="4"  >Class 4</option>
+       <option value="5"  >Class 5</option>
+       <option value="6"  >Class 6</option>
+       <option value="7"  >Class 7</option>
+       <option value="8"  >Class 8</option>
+       <option value="9"  >Class 9</option>
+    </select>
 </div>    
     <script>
 var canvas = document.getElementById('myCanvas');
 var ctx = canvas.getContext('2d');
 ctx.fillStyle = getHexValue(255,255,255);
 var erase_toggle=0
+var element=document.getElementById('theSelect')
+element.value="?selval?"
 //var painting = document.getElementById('paint');
 //var paint_style = getComputedStyle(painting);
 //tw = parseInt(paint_style.getPropertyValue('width'));
@@ -121,21 +135,31 @@ function redrawGrid()
 {
   grid_lines(?grid_count?,?pxl?);
 }
-function hold_up(t_count)
+// function hold_up(t_count)
+// {
+//   var i=0 
+//   console.log('in hold up '+t_count)
+//   var prev_time=Date.now()
+//   var time_diff=0
+//   var dummy=0
+//   while(time_diff<1)
+//   {
+//       Math.log10(prev_time)
+//       curr_time=Date.now()
+//       time_diff=curr_time-prev_time
+//   }    
+//   //IPython.notebook.kernel.execute("import time;time.sleep(1)")
+//}
+/* function change_class_label_no_colab()
 {
-  var i=0 
-  console.log('in hold up '+t_count)
-  var prev_time=Date.now()
-  var time_diff=0
-  var dummy=0
-  while(time_diff<1)
-  {
-      Math.log10(prev_time)
-      curr_time=Date.now()
-      time_diff=curr_time-prev_time
-  }    
-  //IPython.notebook.kernel.execute("import time;time.sleep(1)")
-}
+  var e = document.getElementById("theSelect");
+  var value = e.options[e.selectedIndex].value;
+  var text = e.options[e.selectedIndex].text;
+  console.log(' in not colab class label '+text+" "+value)
+  int_value=parseInt(value) 
+  IPython.notebook.kernel.execute("tnr02="+int_value+";update_class_number(tnr02)")
+  //IPython.notebook.kernel.execute("tnr02="+int_value)
+} */
 function grid_lines(side_count,grid_size)
 {
    var line_count=side_count+1
@@ -199,16 +223,43 @@ function clear_canvas()
   ctx.fillRect(0, 0,c.width,c.height);
   grid_lines(?grid_count?,?pxl?);
 }
+function change_class_label_no_colab()
+{
+  var e = document.getElementById("theSelect");
+  var value = e.options[e.selectedIndex].value;
+  var text = e.options[e.selectedIndex].text;
+  console.log(' in not colab class label '+text+" "+value)
+  int_value=parseInt(value) 
+  IPython.notebook.kernel.execute("tnr02="+int_value+";update_class_number(tnr02)")
+  //IPython.notebook.kernel.execute("tnr02="+int_value)
+}
+function change_class_label_colab() {
+ 
+  var e = document.getElementById("theSelect");
+  var value = e.options[e.selectedIndex].value;
+  var text = e.options[e.selectedIndex].text;
+  console.log(' in not colab class label '+text+" "+value)
+  int_value=parseInt(value) 
+  var t_ark=int_value
+  console.log(' in colab label output') 
+  google.colab.kernel.invokeFunction(
+  'notebook.updateClassLabel', // The callback name.
+  [t_ark, 'world!'], // The arguments.
+  {}); // kwargs
+//const text = result.data['application/json'];
+//document.querySelector("#output-area").appendChild(document.createTextNode(text.result));
+};
 function not_colab_output(targ)
 {
-   console.log(' in not colab ') 
+   console.log(' in not colab ')
+   //IPython.notebook.kernel.execute("tnr="+targ) 
    IPython.notebook.kernel.execute("tnr="+targ+";output_data(tnr)")
 }
 function colab_output(targ) {
     t_ark=targ
     console.log(' in colab output') 
     google.colab.kernel.invokeFunction(
-    'notebook.Concat', // The callback name.
+    'notebook.updateImageData', // The callback name.
     [t_ark, 'world!'], // The arguments.
     {}); // kwargs
   //const text = result.data['application/json'];
@@ -224,6 +275,15 @@ function savePicture()
     //alert(c.width+" "+c.height)
     var imgData = ctx.getImageData(0,0,c.width,c.height).data;
     tStr = JSON.stringify(imgData)
+    t_len=imgData.length
+    var nw_imageData=new Array(t_len/4)
+    var t_index=0
+    for(var i=0;i<t_len;i=i+4)
+    {
+       nw_imageData[t_index]=imgData[i];
+       t_index=t_index+1;
+    }
+    imgData=nw_imageData
     //IPython.notebook.kernel.execute("tnr="+imgData+";output_data(tnr)")
     //IPython.notebook.kernel.execute("tnr="+imgData+";output_data(tnr)")
     // template replaced with a function based on if the notebook is run in colab or mac/pc
@@ -238,7 +298,7 @@ function getHexValue(r,g,b) {
 function drawLine(x1,y1,x2,y2)
 {
    // used for debugging
-   hold_up(2)
+   //hold_up(2)
    var c = document.getElementById("myCanvas");
    var ctx = c.getContext("2d");
    ctx.lineWidth=2;
@@ -253,7 +313,7 @@ function drawLine(x1,y1,x2,y2)
    ctx.closePath();
    ctx.stroke();
    ctx.strokeStyle=getHexValue(255,0,0);
-   hold_up(4)
+   //hold_up(4)
 };
 
     </script>
